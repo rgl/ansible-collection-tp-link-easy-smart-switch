@@ -1,0 +1,21 @@
+namespace: rgl
+name: tp_link_easy_smart_switch
+version: 0.1.0
+readme: README.md
+authors:
+  - Rui Lopes <rgl@ruilopes.com>
+description: TP-Link Easy Smart Switches
+license:
+  - GPL-3.0-or-later
+tags:
+  - tp_link
+  - easy_smart_switch
+  - switch
+build_ignore:
+  - .*
+  - '*.tar.gz'
+  - ansible.cfg
+  - example-*.yml
+  - smrt
+repository: https://github.com/rgl/ansible-collection-tp-link-easy-smart-switch
+issues: https://github.com/rgl/ansible-collection-tp-link-easy-smart-switch/issues

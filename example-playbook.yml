@@ -1,0 +1,102 @@
+- hosts: smrt_switches
+  name: Example
+  gather_facts: no
+  tasks:
+    # NB before using this you MUST manually reset your switch and then set:
+    #     * System
+    #       * User Account
+    #         * New Username:     admin
+    #         * Old Password:     admin
+    #         * New Password:     admin
+    #         * Confirm Password: admin
+    #       * IP Setting
+    #         * DHCP Setting:    Disable
+    #         * IP address:      10.1.0.2
+    #         * Subnet Mask:     255.255.255.0
+    #         * Default Gateway: 10.1.0.1
+    #       * VLAN
+    #         * 802.1Q VLAN
+    #           * 802.1Q VLAN Configuration: Enable
+    #    AND your management computer should be configured as:
+    #       network:
+    #       version: 2
+    #       renderer: networkd
+    #       ethernets:
+    #         enp3s0:
+    #           link-local: []
+    #           addresses:
+    #             - 10.1.0.1/24
+    #       bridges:
+    #         br-rpi:
+    #           link-local: []
+    #           addresses:
+    #             - 10.3.0.1/24
+    #           interfaces:
+    #             - vlan.rpi
+    #       vlans:
+    #         vlan.wan:
+    #           id: 2
+    #           link: enp3s0
+    #           link-local: []
+    #           addresses:
+    #             - 192.168.1.1/24
+    #           gateway4: 192.168.1.254
+    #           nameservers:
+    #             addresses:
+    #               - 8.8.8.8
+    #               - 8.8.4.4
+    #               - 1.1.1.1
+    #         vlan.rpi:
+    #           id: 3
+    #           link: enp3s0
+    #           link-local: []
+    - name: Configure the TL-SG108E switch
+      connection: local
+      rgl.tp_link_easy_smart_switch.smrt_config:
+        username: "{{ smrt_username }}"
+        password: "{{ smrt_password }}"
+        host_ip_address: "{{ smrt_host_ip_address }}"
+        host_mac_address: "{{ smrt_host_mac_address }}"
+        switch_mac_address: "{{ smrt_switch_mac_address }}"
+        # NB undefined ports will be disabled and put in vlan 1 as untagged
+        #    ports.
+        # NB ports that are not explicitly added in vlans will be disabled
+        #    and put in vlan 1 as untagged ports.
+        # NB ports without explicit pvid will be deduced from the vlans (use
+        #    the first vlan that has the port as an untagged port).
+        ports:
+          - port: 1
+            name: isp
+          - port: 2
+            name: desktop
+          - port: 5
+            name: rpi1
+          - port: 6
+            name: rpi2
+          - port: 7
+            name: rpi3
+          - port: 8
+            name: rpi4
+        vlans:
+          # NB do not remove your management computer (in this example, its in
+          #    the desktop port) from vlan 1 because that is the only vlan
+          #    that can manage the switch.
+          - vlan_id: 1
+            name: management
+            untagged_ports:
+              - desktop
+          - vlan_id: 2
+            name: wan
+            tagged_ports:
+              - desktop
+            untagged_ports:
+              - isp
+          - vlan_id: 3
+            name: rpi
+            tagged_ports:
+              - desktop
+            untagged_ports:
+              - rpi1
+              - rpi2
+              - rpi3
+              - rpi4
