@@ -245,5 +245,10 @@ class SmrtConfig(AnsibleModule):
         self.exit_json(changed=changed, content=dict())
 
 
+def main():
+    module = SmrtConfig()
+    module.main()
+
+
 if __name__ == '__main__':
-    SmrtConfig().main()
+    main()
