@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # Copyright (c) 2021 Rui Lopes (ruilopes.com).
-#
 # GNU General Public License v3.0+ (https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
