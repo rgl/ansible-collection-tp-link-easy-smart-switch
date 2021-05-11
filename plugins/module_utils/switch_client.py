@@ -45,7 +45,7 @@ class SmrtSwitchClient(SmrtSwitchClientInterface):
 
     def get_ports(self):
         # get the actual ports from the switch.
-        _, payload = self._network.query(Protocol.GET, [(Protocol.get_id('ports'), b'')])
+        _header, payload = self._network.query(Protocol.GET, [(Protocol.get_id('ports'), b'')])
         # payload is an array of tuples (property_id, property_name, ...depend on property_id...):
         #   (4096, 'ports', enabled) # e.g. (4096, 'ports', '01:01:00:01:06:00:00')
         #                                                    ^^ ^^ ^^ ^^ ^^ ^^ ^^
@@ -87,7 +87,7 @@ class SmrtSwitchClient(SmrtSwitchClientInterface):
                         p['lag'],
                         p['speed'],
                         p['flow_control']))))
-        _, payload = self._network.set(
+        _header, _payload = self._network.set(
             self._username,
             self._password,
             set_payload)
@@ -95,7 +95,7 @@ class SmrtSwitchClient(SmrtSwitchClientInterface):
 
     def get_pvids(self):
         # get the actual pvids from the switch and set them in actual_ports.
-        _, payload = self._network.query(Protocol.GET, [(Protocol.get_id('pvid'), b'')])
+        _header, payload = self._network.query(Protocol.GET, [(Protocol.get_id('pvid'), b'')])
         # payload is an array of tuples (property_id, property_name, ...depend on property_id...):
         #   (8706, 'pvid', (port, pvid)) # e.g. (8706, 'pvid', (1, 1))
         #   (8707, 'vlan_filler', vlan_filler) # e.g. (8707, 'vlan_filler', ' ')
@@ -114,7 +114,7 @@ class SmrtSwitchClient(SmrtSwitchClientInterface):
                 Protocol.set_pvid(
                     v['pvid'],
                     v['port'])))
-        _, payload = self._network.set(
+        _header, _payload = self._network.set(
             self._username,
             self._password,
             set_payload)
@@ -122,7 +122,7 @@ class SmrtSwitchClient(SmrtSwitchClientInterface):
 
     def get_vlans(self):
         # get the actual vlans from the switch.
-        _, payload = self._network.query(Protocol.GET, [(Protocol.get_id('vlan'), b'')])
+        _header, payload = self._network.query(Protocol.GET, [(Protocol.get_id('vlan'), b'')])
         # payload is an array of tuples (property_id, property_name, ...depend on property_id...):
         #   (8704, 'vlan_enabled', enabled) # e.g. (8704, 'vlan_enabled', '01')
         #   (8705, 'vlan', (vlan_id, member_ports, tagged_ports, vlan_name)) # e.g. (8705, 'vlan', (1, '1,2,4', '', 'Default'))
@@ -148,7 +148,7 @@ class SmrtSwitchClient(SmrtSwitchClientInterface):
                     ports_to_byte(v['member_ports']),
                     ports_to_byte(v['tagged_ports']),
                     v['name'] or '')))
-            _, payload = self._network.set(
+            _header, _payload = self._network.set(
                 self._username,
                 self._password,
                 set_payload)
