@@ -1,0 +1,19 @@
+name: Build
+on:
+  - push
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Build Environment
+        run: ./build-install.sh
+      - name: Build
+        run: ./build.sh
+      - name: Archive Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifacts
+          path: |
+            *.tar.gz

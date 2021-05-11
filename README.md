@@ -1,5 +1,7 @@
 # Ansible Collection - rgl.tp_link_easy_smart_switch
 
+[![Build status](https://github.com/rgl/ansible-collection-tp-link-easy-smart-switch/workflows/Build/badge.svg)](https://github.com/rgl/ansible-collection-tp-link-easy-smart-switch/actions?query=workflow%3ABuild)
+
 **NB** This is an experimental collection.
 
 This collection configures the [TP-Link Easy Smart switches](https://www.tp-link.com/en/business-networking/easy-smart-switch/).
@@ -53,21 +55,10 @@ For more information see:
 
 This collection is developed in a Ubuntu 20.04 host by following these instructions.
 
-Install Ansible:
+Install the build environment:
 
 ```bash
-ansible_version='2.10.7'        # see https://pypi.org/project/ansible/
-ansible_lint_version='4.3.7'    # see https://pypi.org/project/ansible-lint/
-# see https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-with-pip
-sudo apt-get install -y --no-install-recommends python3-pip python3-venv python3-cryptography python3-yaml
-rm -rf .ansible-venv
-python3 -m venv --system-site-packages .ansible-venv
-source .ansible-venv/bin/activate
-# NB this pip install will display several "error: invalid command 'bdist_wheel'"
-#    messages, those can be ignored.
-python3 -m pip install "ansible==$ansible_version" "ansible-base==$ansible_version" "ansible-lint==$ansible_lint_version"
-ansible --version
-ansible -m ping localhost
+./build-install.sh
 ```
 
 For historical purposes, this collection skeleton was [created with `ansible-galaxy collection init`](https://docs.ansible.com/ansible/2.10/dev_guide/developing_collections.html#creating-a-collection-skeleton) as:
@@ -78,14 +69,16 @@ cd rgl.tp_link_easy_smart_switch
 git init
 ```
 
-Build and try the collection:
+Build and install the collection:
 
 ```bash
-export ANSIBLE_COLLECTIONS_PATH="$PWD/.ansible-collections"
-rm -f rgl-tp_link_easy_smart_switch-*.tar.gz
-ansible-galaxy collection build --verbose
-tar tf rgl-tp_link_easy_smart_switch-*.tar.gz
-ansible-galaxy collection install --verbose --force rgl-tp_link_easy_smart_switch-*.tar.gz
+./build.sh
+```
+
+Try the collection:
+
+```bash
+source build-env.sh
 ansible-inventory --list --yaml
 ansible-lint example-playbook.yml
 ansible-playbook example-playbook.yml --syntax-check

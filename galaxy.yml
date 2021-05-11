@@ -16,6 +16,7 @@ build_ignore:
   - '*.tar.gz'
   - ansible.cfg
   - example-*.yml
-  - smrt
+  - build*
+  - requirements*
 repository: https://github.com/rgl/ansible-collection-tp-link-easy-smart-switch
 issues: https://github.com/rgl/ansible-collection-tp-link-easy-smart-switch/issues

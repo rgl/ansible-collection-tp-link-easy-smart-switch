@@ -1,3 +1,4 @@
-.*/
+.ansible-venv/
+.vscode/
 *.tar.gz
 *.pyc

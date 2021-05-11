@@ -1,0 +1,3 @@
+ansible==2.10.7         # see https://pypi.org/project/ansible/
+ansible-base==2.10.7    # see https://pypi.org/project/ansible-base/
+ansible-lint==4.3.7     # see https://pypi.org/project/ansible-lint/
