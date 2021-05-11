@@ -61,7 +61,7 @@ Install the build environment:
 ./build-install.sh
 ```
 
-For historical purposes, this collection skeleton was [created with `ansible-galaxy collection init`](https://docs.ansible.com/ansible/2.10/dev_guide/developing_collections.html#creating-a-collection-skeleton) as:
+For historical purposes, this collection skeleton was [created with `ansible-galaxy collection init`](https://docs.ansible.com/ansible/2.11/dev_guide/developing_collections.html#creating-a-collection-skeleton) as:
 
 ```bash
 ansible-galaxy collection init rgl.tp_link_easy_smart_switch
@@ -79,6 +79,7 @@ Try the collection:
 
 ```bash
 source build-env.sh
+ansible-galaxy collection install -r example-playbook-requirements.yml
 ansible-inventory --list --yaml
 ansible-lint example-playbook.yml
 ansible-playbook example-playbook.yml --syntax-check
@@ -100,8 +101,8 @@ ansible-galaxy collection publish --verbose -vvv ./rgl-tp_link_easy_smart_switch
 
 ## Reference
 
-* [Ansible: Developing collections](https://docs.ansible.com/ansible/2.10/dev_guide/developing_collections.html).
-* [Ansible: Working With Plugins](https://docs.ansible.com/ansible/2.10/plugins/plugins.html).
+* [Ansible: Developing collections](https://docs.ansible.com/ansible/2.11/dev_guide/developing_collections.html).
+* [Ansible: Working With Plugins](https://docs.ansible.com/ansible/2.11/plugins/plugins.html).
 * [The Easy Smart Configuration Protocol (ESCP)](https://www.chrisdcmoore.co.uk/post/tplink-easy-smart-switch-vulnerabilities/#the-easy-smart-configuration-protocol-escp).
 * smrt python library
   * [Forked smrt library by Philippe Chataignon](https://github.com/philippechataignon/smrt)
