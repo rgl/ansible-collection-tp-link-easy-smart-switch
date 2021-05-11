@@ -8,6 +8,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 module: smrt_config
+author: Rui Lopes (@rgl)
 short_description: Configure a TP-Link Easy Smart Switch
 description:
     - Configure a TP-Link Easy Smart Switch ports and vlans.
