@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import socket, random, logging
 
 from .protocol import Protocol
