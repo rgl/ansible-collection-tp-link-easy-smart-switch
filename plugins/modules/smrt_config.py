@@ -64,8 +64,9 @@ options:
             enabled:
                 description:
                     - Whether this port should be enabled.
-                    - Default: True.
+                    - Defaults to True.
                 type: bool
+                default: True
     vlans:
         required: True
         description:
