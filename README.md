@@ -108,3 +108,8 @@ ansible-galaxy collection publish --verbose -vvv ./rgl-tp_link_easy_smart_switch
     * the [`plugins/module_utils`](plugins/module_utils) directory contains a
       slightly modified version of the `smrt` library from the [e545df10a0abf4c576b1aedf1b54a8d0faebf290](https://github.com/philippechataignon/smrt/tree/e545df10a0abf4c576b1aedf1b54a8d0faebf290) tree.
   * [Original smrt library by Philipp Klaus](https://github.com/pklaus/smrt/tree/master/smrt)
+* IRC Channels on [Freenode](https://en.wikipedia.org/wiki/Freenode):
+  * [#ansible](irc://irc.freenode.net/#ansible)
+  * [#ansible-community](irc://irc.freenode.net/#ansible-community)
+  * [#ansible-galaxy](irc://irc.freenode.net/#ansible-galaxy)
+  * [#ansible-devel](irc://irc.freenode.net/#ansible-devel)
