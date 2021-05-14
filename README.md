@@ -16,7 +16,15 @@ The switch is managed by sending commands to the UDP `255.255.255.255:29808` bro
 
 ## Usage
 
+Install [this collection from Ansible Galaxy](https://galaxy.ansible.com/rgl/tp_link_easy_smart_switch) with:
+
+```bash
+ansible-galaxy collection install rgl.tp_link_easy_smart_switch
+```
+
 See the [example-playbook.yml](example-playbook.yml) playbook and [example-inventory.yml](example-inventory.yml) inventory for an example usage and host requirements.
+
+See the [Development section](#development) to known how to build this collection from source code.
 
 ## TL-SG108E Switch Reset Procedure
 
