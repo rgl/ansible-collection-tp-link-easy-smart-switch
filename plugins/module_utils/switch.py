@@ -21,6 +21,7 @@ class SmrtSwitch(object):
         self._client = switch_client
 
     def get_config(self):
+        vlan_enabled = self._client.get_vlan_enabled()
         ports = {}
         pvids = {p['port']: p['pvid'] for p in self._client.get_pvids()}
         for p in self._client.get_ports():
@@ -44,6 +45,7 @@ class SmrtSwitch(object):
                 'untagged_ports': sorted(set(member_ports) - set(tagged_ports)),
             }
         return {
+            'vlan_enabled': vlan_enabled,
             'ports': ports,
             'vlans': vlans,
         }
@@ -57,8 +59,17 @@ class SmrtSwitch(object):
             self._get_config_diff(actual_config, desired_config))
 
     def _get_config_diff(self, actual_config, desired_config):
+        actual_vlan_enabled = actual_config['vlan_enabled']
         actual_ports = actual_config['ports']
         actual_vlans = actual_config['vlans']
+
+        # compute the vlan_enabled diff.
+        desired_vlan_enabled = True
+        vlan_enabled_diff = {
+            'equal': desired_vlan_enabled if desired_vlan_enabled == actual_vlan_enabled else None,
+            'add': desired_vlan_enabled if desired_vlan_enabled != actual_vlan_enabled else None,
+            'remove': actual_vlan_enabled if actual_vlan_enabled != desired_vlan_enabled else None,
+        }
 
         # index the ports by name and port number.
         ports = {p['name']: p for p in desired_config['ports'] if p.get('name')}
@@ -239,11 +250,15 @@ class SmrtSwitch(object):
             }
 
         return {
+            'vlan_enabled': vlan_enabled_diff,
             'ports': ports_diff,
             'vlans': vlans_diff,
         }
 
     def _set_config_diff(self, dry_run, actual_config, desired_config, config_diff):
+        # create the desired vlan_enabled configuration changes.
+        vlan_enabled = config_diff['vlan_enabled']['add']
+
         # create the desired ports configuration changes.
         ports = []
         for port, d in config_diff['ports'].items():
@@ -304,6 +319,12 @@ class SmrtSwitch(object):
                 'tagged_ports': sorted(tagged_ports)})
 
         changed = False
+
+        if vlan_enabled is not None:
+            logger.debug('%smodifying vlan_enabled', 'dry run: ' if dry_run else '')
+            if not dry_run:
+                self._client.set_vlan_enabled(vlan_enabled)
+            changed = True
 
         if ports:
             for p in ports:

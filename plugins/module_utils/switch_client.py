@@ -119,6 +119,24 @@ class SmrtSwitchClient(SmrtSwitchClientInterface):
             set_payload)
         # TODO verify the returned payload. it returns the settings after our change, we should verify if they match our expectation.
 
+    def get_vlan_enabled(self):
+        # get the actual vlans from the switch.
+        _header, payload = self._network.query(Protocol.GET, [(Protocol.get_id('vlan_enabled'), b'')])
+        # payload is an array of tuples (property_id, property_name, ...depend on property_id...):
+        #   (8704, 'vlan_enabled', enabled) # e.g. (8704, 'vlan_enabled', '01')
+        for p in payload:
+            if p[1] == 'vlan_enabled':
+                return int(p[2], 16) != 0
+        return False
+
+    def set_vlan_enabled(self, enabled):
+        set_payload = [(Protocol.get_id('vlan_enabled'), b'\x01' if enabled else b'\x00')]
+        _header, _payload = self._network.set(
+            self._username,
+            self._password,
+            set_payload)
+        # TODO verify the returned payload.
+
     def get_vlans(self):
         # get the actual vlans from the switch.
         _header, payload = self._network.query(Protocol.GET, [(Protocol.get_id('vlan'), b'')])
