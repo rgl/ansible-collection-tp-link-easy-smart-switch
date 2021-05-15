@@ -2,7 +2,7 @@
 # GNU General Public License v3.0+ (https://www.gnu.org/licenses/gpl-3.0.txt)
 
 # hack to make this file directly executable as python3 switch.py.
-if __package__ is None:
+if not __package__:
     import os.path
     parent_directory = os.path.dirname(os.path.abspath(__file__))
     __package__ = os.path.basename(parent_directory)
@@ -367,8 +367,9 @@ if __name__ == '__main__':
         example_inventory = yaml.safe_load(f)
     smrt_host_ip_address = example_inventory['all']['vars']['smrt_host_ip_address']
     smrt_host_mac_address = example_inventory['all']['vars']['smrt_host_mac_address']
-    smrt_switch_mac_address = example_inventory['all']['children']['smrt_switches']['hosts']['10.1.0.2']['smrt_switch_mac_address']
-    smrt_username = example_inventory['all']['vars']['smrt_host_mac_address']
+    smrt_switch_ip_address = list(example_inventory['all']['children']['smrt_switches']['hosts'].keys())[0]
+    smrt_switch_mac_address = example_inventory['all']['children']['smrt_switches']['hosts'][smrt_switch_ip_address]['smrt_switch_mac_address']
+    smrt_username = example_inventory['all']['vars']['smrt_username']
     smrt_password = example_inventory['all']['vars']['smrt_password']
 
     with open(f'{os.path.dirname(os.path.abspath(__file__))}/../../example-playbook.yml', 'r') as f:

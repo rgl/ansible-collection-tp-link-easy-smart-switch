@@ -1,3 +1,4 @@
+ansible-lint==5.0.8     # see https://pypi.org/project/ansible-lint/
 pycodestyle==2.7.0      # see https://pypi.org/project/pycodestyle/
 voluptuous==0.12.1      # see https://pypi.org/project/voluptuous/
 yamllint==1.26.1        # see https://pypi.org/project/yamllint/

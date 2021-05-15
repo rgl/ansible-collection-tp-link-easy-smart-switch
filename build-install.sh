@@ -8,6 +8,7 @@ sudo apt-get install -y --no-install-recommends \
     python3-venv \
     python3-cryptography \
     python3-yaml \
+    python3-netifaces \
     pylint
 
 # (re)create the venv.

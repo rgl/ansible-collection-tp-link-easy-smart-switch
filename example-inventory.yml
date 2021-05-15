@@ -6,6 +6,6 @@ all:
           smrt_switch_mac_address: 50:d4:f7:22:22:22
   vars:
     smrt_username: admin
-    smrt_password: admin
+    smrt_password: HeyH0Password
     smrt_host_ip_address: 10.1.0.1
     smrt_host_mac_address: 08:60:6e:11:11:11

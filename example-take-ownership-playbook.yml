@@ -1,0 +1,13 @@
+- hosts: smrt_switches
+  name: Example take ownership
+  gather_facts: no
+  tasks:
+    # NB before using this make sure you have read the take ownership section
+    #    of the README.
+    - name: Take ownership of the TL-SG108E switch
+      connection: local
+      rgl.tp_link_easy_smart_switch.smrt_take_ownership:
+        username: "{{ smrt_username }}"
+        password: "{{ smrt_password }}"
+        switch_ip_address: "{{ inventory_hostname }}"
+        switch_mac_address: "{{ smrt_switch_mac_address }}"

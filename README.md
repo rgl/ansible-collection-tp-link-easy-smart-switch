@@ -22,25 +22,102 @@ Install [this collection from Ansible Galaxy](https://galaxy.ansible.com/rgl/tp_
 ansible-galaxy collection install rgl.tp_link_easy_smart_switch
 ```
 
-See the [example-playbook.yml](example-playbook.yml) playbook and [example-inventory.yml](example-inventory.yml) inventory for an example usage and host requirements.
+Install the required python libraries:
 
-See the [Development section](#development) to known how to build this collection from source code.
+```bash
+# install dependencies in ubuntu 20.04.
+sudo apt-get install -y --no-install-recommends \
+    python3-netifaces
+```
 
-## TL-SG108E Switch Reset Procedure
+[Take ownership](#take-ownership-procedure) of the switch.
+
+**NB** Normally you only need to do this once.
+
+Review the [example-playbook.yml](example-playbook.yml) playbook and the [example-inventory.yml](example-inventory.yml) inventory files.
+
+Execute the playbook:
+
+```bash
+ansible-playbook example-playbook.yml --check -vvv
+ansible-playbook example-playbook.yml -vvv
+```
+
+To build this collection from source code see the [Development section](#development).
+
+## Take Ownership Procedure
+
+This procedure resets the switch to the default factory settings and sets the
+switch `admin` user password and static IP configuration.
+
+Make sure your computer has an IP address in the switch final network and
+another in the switch default `192.168.0.0/24` network.
+
+**NB** The switch will use the 192.168.0.1 IP address when there is no DHCP
+server in the network.
+
+This procedure assumes the host has the following netplan configuration:
+
+```yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp3s0:
+      link-local: []
+      addresses:
+        - 10.1.0.1/24
+        - 192.168.0.254/24
+  bridges:
+    br-rpi:
+      link-local: []
+      addresses:
+        - 10.3.0.1/24
+      interfaces:
+        - vlan.rpi
+  vlans:
+    vlan.wan:
+      id: 2
+      link: enp3s0
+      link-local: []
+      addresses:
+        - 192.168.1.1/24
+      gateway4: 192.168.1.254
+      nameservers:
+        addresses:
+          # cloudflare+apnic public dns resolvers.
+          # see https://en.wikipedia.org/wiki/1.1.1.1
+          - "1.1.1.1"
+          - "1.0.0.1"
+          # google public dns resolvers.
+          # see https://en.wikipedia.org/wiki/8.8.8.8
+          #- "8.8.8.8"
+          #- "8.8.4.4"
+    vlan.rpi:
+      id: 3
+      link: enp3s0
+      link-local: []
+```
+
+Ensure that these addresses (and mac addresses) are defined in your inventory and playbook.
+
+As an example, ensure they are defined in:
+
+* [example-inventory.yml](example-inventory.yml)
+* [example-take-ownership-playbook.yml](example-take-ownership-playbook.yml)
+* [example-playbook.yml](example-inventory.yml)
 
 While the switch is powered on:
 
 1. Remove all cables (except your computer) from the switch ports.
-4. Hold the switch Reset pin for 10 seconds and wait for it reset (blink all ports lights).
-5. Add the `192.168.0.2` IP address to your computer, e.g.: `sudo ip addr add 192.168.0.2/24 dev enp3s0`.
-6. Access http://192.168.0.1 and configure it as described in [example-playbook.yml](example-playbook.yml).
-7. Remove the added IP address from your computer, e.g.: `sudo ip addr del 192.168.0.2/24 dev enp3s0`.
+2. Hold the switch Reset pin for 10 seconds and wait for it to reboot (when it blinks all the ports lights).
+3. Wait for the switch to boot (when your computer switch port light blinks again, it should be good to go).
+4. Execute the take ownership playbook, e.g.:
+   ```bash
+   ansible-playbook example-take-ownership-playbook.yml
+   ```
 
-You can also reset it from the Web UI at:
-
-* System
-  * System Tools
-    * System Reset
+You are now ready to execute the regular (non take-ownership) playbooks.
 
 ## Wireshark Filters
 
