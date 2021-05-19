@@ -39,8 +39,8 @@ Review the [example-playbook.yml](example-playbook.yml) playbook and the [exampl
 Execute the playbook:
 
 ```bash
-ansible-playbook example-playbook.yml --check -vvv
-ansible-playbook example-playbook.yml -vvv
+ansible-playbook example-playbook.yml --check --diff -vvv
+ansible-playbook example-playbook.yml --diff -vvv
 ```
 
 To build this collection from source code see the [Development section](#development).

@@ -3,6 +3,7 @@
 # GNU General Public License v3.0+ (https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 DOCUMENTATION = '''
@@ -193,12 +194,19 @@ class SmrtConfig(AnsibleModule):
                 self.params['username'],
                 self.params['password']))
 
-        changed = switch.set_config(self.check_mode, {
+        result = switch.set_config(self.check_mode, {
             'ports': self.params['ports'],
             'vlans': self.params['vlans'],
         })
 
-        self.exit_json(changed=changed, content=dict())
+        diff = None
+
+        if self._diff:
+            diff = {
+                'prepared': result['diff'],
+            }
+
+        self.exit_json(changed=result['changed'], content=dict(), diff=diff)
 
 
 def main():

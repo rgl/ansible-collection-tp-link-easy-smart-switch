@@ -10,6 +10,7 @@ if not __package__:
     sys.path.insert(0, os.path.dirname(parent_directory))
 
 import logging
+
 from .switch_client import SmrtSwitchClient
 
 logger = logging.getLogger(__name__)
@@ -76,8 +77,11 @@ class SmrtSwitch(object):
         ports.update({str(p['port']): p for p in desired_config['ports']})
         # also add undefined ports by port number, so we can refer them by
         # number in vlans too.
-        for p in set(actual_ports.keys()) - set(ports.keys()):
-            ports[str(p)] = {'port': p}
+        for p in set(str(k) for k in actual_ports.keys()) - set(ports.keys()):
+            ports[p] = {
+                'port': p,
+                'name': p,
+            }
 
         # index the vlans by name and vlan id.
         vlans = {v['name']: v for v in desired_config['vlans'] if v.get('name')}
@@ -146,6 +150,7 @@ class SmrtSwitch(object):
         ports_diff = {}
         # compute which ports need to be added or modified.
         for port, desired_port in desired_ports.items():
+            desired_name = desired_port['name']
             desired_enabled = desired_port['enabled']
             desired_pvid = desired_port['pvid']
             actual_port = actual_ports.get(port)
@@ -157,6 +162,7 @@ class SmrtSwitch(object):
                 actual_pvid = None
             ports_diff[port] = {
                 'port': port,
+                'name': desired_name,
                 'enabled': {
                     'equal': desired_enabled if desired_enabled == actual_enabled else None,
                     'add': desired_enabled if desired_enabled != actual_enabled else None,
@@ -180,6 +186,7 @@ class SmrtSwitch(object):
             actual_pvid = actual_port['pvid']
             ports_diff[port] = {
                 'port': port,
+                'name': str(port),
                 'enabled': {
                     'equal': desired_enabled if desired_enabled == actual_enabled else None,
                     'add': desired_enabled if desired_enabled != actual_enabled else None,
@@ -249,10 +256,88 @@ class SmrtSwitch(object):
                 },
             }
 
+        # compute the textual diff.
+        # NB this gives us better context than doing a textual diff between the
+        #    equivalent actual vs desired yaml representation.
+        diff = []
+        if vlan_enabled_diff['remove'] is not None:
+            diff.append(f"-vlan_enabled: {vlan_enabled_diff['remove']}")
+        if vlan_enabled_diff['add'] is not None:
+            diff.append(f"+vlan_enabled: {vlan_enabled_diff['add']}")
+        # compute the diff ports diff.
+        textual_ports_diff = []
+        for p in sorted(ports_diff.values(), key=lambda p: p['port']):
+            textual_port_diff = []
+            if p['enabled']['remove'] is not None:
+                textual_port_diff.append(f"-    enabled: {p['enabled']['remove']}")
+            if p['enabled']['add'] is not None:
+                textual_port_diff.append(f"+    enabled: {p['enabled']['add']}")
+            if p['pvid']['remove'] is not None:
+                textual_port_diff.append(f"-    pvid: {p['pvid']['remove']}")
+            if p['pvid']['add'] is not None:
+                textual_port_diff.append(f"+    pvid: {p['pvid']['add']}")
+            if not textual_port_diff:
+                continue
+            textual_ports_diff.append(f"   - port: {p['port']}")
+            if p['port'] != p['name']:
+                textual_ports_diff.append(f"     name: {p['name']}")
+            textual_ports_diff.extend(textual_port_diff)
+        if textual_ports_diff:
+            diff.append(' ports:')
+            diff.extend(textual_ports_diff)
+        # compute the textual vlans diff.
+        textual_vlans_diff = []
+        for v in sorted(vlans_diff.values(), key=lambda v: v['vlan_id']):
+            vlan_id = v['vlan_id']
+            vlan_change = ' '
+            if vlan_id not in actual_vlans:
+                vlan_change = '+'
+            elif vlan_id not in desired_vlans:
+                vlan_change = '-'
+            textual_vlan_diff = []
+            if v['name']['remove'] is not None:
+                textual_vlan_diff.append(f"-    name: {v['name']['remove']}")
+            if v['name']['add'] is not None:
+                textual_vlan_diff.append(f"+    name: {v['name']['add']}")
+            textual_vlan_tagged_ports_diff = []
+            if v['tagged_ports']['remove'] is not None:
+                for p in v['tagged_ports']['remove']:
+                    textual_vlan_tagged_ports_diff.append(f"-      - {ports[str(p)]['name']}")
+            if v['tagged_ports']['add'] is not None:
+                for p in v['tagged_ports']['add']:
+                    textual_vlan_tagged_ports_diff.append(f"+      - {ports[str(p)]['name']}")
+            if textual_vlan_tagged_ports_diff:
+                textual_vlan_diff.append(f"{vlan_change}    tagged_ports:")
+                textual_vlan_diff.extend(textual_vlan_tagged_ports_diff)
+            textual_vlan_untagged_ports_diff = []
+            if v['untagged_ports']['remove'] is not None:
+                for p in v['untagged_ports']['remove']:
+                    textual_vlan_untagged_ports_diff.append(f"-      - {ports[str(p)]['name']}")
+            if v['untagged_ports']['add'] is not None:
+                for p in v['untagged_ports']['add']:
+                    textual_vlan_untagged_ports_diff.append(f"+      - {ports[str(p)]['name']}")
+            if textual_vlan_untagged_ports_diff:
+                textual_vlan_diff.append(f"{vlan_change}    untagged_ports:")
+                textual_vlan_diff.extend(textual_vlan_untagged_ports_diff)
+            if not textual_vlan_diff:
+                continue
+            if v['name']['equal'] is not None:
+                textual_vlan_diff.insert(0, f"{vlan_change}    name: {v['name']['equal']}")
+            textual_vlans_diff.append(f"{vlan_change}  - vlan_id: {v['vlan_id']}")
+            textual_vlans_diff.extend(textual_vlan_diff)
+        if textual_vlans_diff:
+            diff.append(' vlans:')
+            diff.extend(textual_vlans_diff)
+        if diff:
+            diff.insert(0, '--- a/config.yml')
+            diff.insert(1, '+++ b/config.yml')
+            diff.insert(2, '@@ -0,0 +0,0 @@')
+
         return {
             'vlan_enabled': vlan_enabled_diff,
             'ports': ports_diff,
             'vlans': vlans_diff,
+            'diff': '\n'.join(diff),
         }
 
     def _set_config_diff(self, dry_run, actual_config, desired_config, config_diff):
@@ -354,7 +439,10 @@ class SmrtSwitch(object):
                 self._client.set_vlans(vlans)
             changed = True
 
-        return changed
+        return {
+            'changed': changed,
+            'diff': config_diff['diff'],
+        }
 
 
 if __name__ == '__main__':
@@ -387,6 +475,6 @@ if __name__ == '__main__':
             smrt_switch_mac_address,
             smrt_username,
             smrt_password))
-    changed = switch.set_config(True, config)
+    result = switch.set_config(True, config)
 
-    logger.debug('settings changed? %s', changed)
+    logger.debug(yaml.dump(result))
