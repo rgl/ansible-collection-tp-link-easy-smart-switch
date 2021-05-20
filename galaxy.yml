@@ -1,6 +1,6 @@
 namespace: rgl
 name: tp_link_easy_smart_switch
-version: 0.1.0
+version: 0.2.0
 readme: README.md
 authors:
   - Rui Lopes <rgl@ruilopes.com>
