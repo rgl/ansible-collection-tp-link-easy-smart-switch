@@ -12,8 +12,6 @@ plugins/module_utils/protocol.py pylint!skip
 plugins/module_utils/protocol.py pep8!skip
 plugins/module_utils/switch.py future-import-boilerplate
 plugins/module_utils/switch.py metaclass-boilerplate
-plugins/module_utils/test_data.py future-import-boilerplate
-plugins/module_utils/test_data.py metaclass-boilerplate
 plugins/module_utils/switch_client.py future-import-boilerplate
 plugins/module_utils/switch_client.py metaclass-boilerplate
 plugins/module_utils/switch_take_ownership.py import-3.8!skip

@@ -18,5 +18,6 @@ build_ignore:
   - example-*.yml
   - build*
   - requirements*
+  - plugins/module_utils/test_data.py
 repository: https://github.com/rgl/ansible-collection-tp-link-easy-smart-switch
 issues: https://github.com/rgl/ansible-collection-tp-link-easy-smart-switch/issues
