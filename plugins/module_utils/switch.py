@@ -329,8 +329,8 @@ class SmrtSwitch(object):
             diff.append(' vlans:')
             diff.extend(textual_vlans_diff)
         if diff:
-            diff.insert(0, '--- a/config.yml')
-            diff.insert(1, '+++ b/config.yml')
+            diff.insert(0, '--- before: config.yml')
+            diff.insert(1, '+++ after: config.yml')
             diff.insert(2, '@@ -0,0 +0,0 @@')
 
         return {
