@@ -12,6 +12,8 @@ author: Rui Lopes (@rgl)
 short_description: Take ownership of a TP-Link Easy Smart Switch
 description:
     - Take ownership of a factory reset switch.
+notes:
+    - This module supports the I(check_mode).
 requirements:
     - netifaces
 options:

@@ -12,6 +12,8 @@ author: Rui Lopes (@rgl)
 short_description: Configure a TP-Link Easy Smart Switch
 description:
     - Configure a TP-Link Easy Smart Switch ports and vlans.
+notes:
+   - This module supports the I(check_mode) and I(diff_mode).
 options:
     username:
         required: True
