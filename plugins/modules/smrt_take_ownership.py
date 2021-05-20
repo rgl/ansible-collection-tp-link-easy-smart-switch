@@ -12,6 +12,7 @@ author: Rui Lopes (@rgl)
 short_description: Take ownership of a TP-Link Easy Smart Switch
 description:
     - Take ownership of a factory reset switch.
+    - "**You must factory reset the swith before using this. Check the README for more information.**"
 notes:
     - This module supports the I(check_mode).
 requirements:
@@ -21,16 +22,22 @@ options:
         required: True
         description:
             - The switch username.
+            - The default username (admin) will be renamed to this value.
         type: str
     password:
         required: True
         description:
             - The switch password.
+            - The switch password will be set to this value.
         type: str
     switch_ip_address:
         required: True
         description:
             - The switch ip address.
+            - The switch ip address will be set to this value.
+            - The switch ip address must be in a network directly accessible from the host.
+            - The switch network mask will be inferred from the host ip address.
+            - The switch gateway will be set to the host ip address.
         type: str
     switch_mac_address:
         required: True

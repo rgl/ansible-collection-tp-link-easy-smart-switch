@@ -16,18 +16,25 @@ The switch is managed by sending commands to the UDP `255.255.255.255:29808` bro
 
 ## Usage
 
-Install [this collection from Ansible Galaxy](https://galaxy.ansible.com/rgl/tp_link_easy_smart_switch) with:
-
-```bash
-ansible-galaxy collection install rgl.tp_link_easy_smart_switch
-```
-
 Install the required python libraries:
 
 ```bash
 # install dependencies in ubuntu 20.04.
 sudo apt-get install -y --no-install-recommends \
     python3-netifaces
+```
+
+Install [this collection from Ansible Galaxy](https://galaxy.ansible.com/rgl/tp_link_easy_smart_switch) with:
+
+```bash
+ansible-galaxy collection install rgl.tp_link_easy_smart_switch
+```
+
+Show the documentation:
+
+```bash
+ansible-doc --list rgl.tp_link_easy_smart_switch
+ansible-doc rgl.tp_link_easy_smart_switch.smrt_config
 ```
 
 [Take ownership](#take-ownership-procedure) of the switch.
@@ -99,7 +106,7 @@ network:
       link-local: []
 ```
 
-Ensure that these addresses (and mac addresses) are defined in your inventory and playbook.
+Ensure that the correct ip (and mac) addresses are defined in your inventory and playbook.
 
 As an example, ensure they are defined in:
 
