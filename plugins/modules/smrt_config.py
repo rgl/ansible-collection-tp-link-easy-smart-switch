@@ -205,10 +205,51 @@ class SmrtConfig(AnsibleModule):
 
         if self._diff:
             diff = {
-                'prepared': result['diff'],
+                'prepared': get_highlighted_diff(result['diff']),
             }
 
         self.exit_json(changed=result['changed'], content=dict(), diff=diff)
+
+
+# NB this came from https://github.com/ansible/ansible/blob/v2.11.0/lib/ansible/constants.py#L89-L101
+COLOR_CODES = {
+    'black': u'0;30', 'bright gray': u'0;37',
+    'blue': u'0;34', 'white': u'1;37',
+    'green': u'0;32', 'bright blue': u'1;34',
+    'cyan': u'0;36', 'bright green': u'1;32',
+    'red': u'0;31', 'bright cyan': u'1;36',
+    'purple': u'0;35', 'bright red': u'1;31',
+    'yellow': u'0;33', 'bright purple': u'1;35',
+    'dark gray': u'1;30', 'bright yellow': u'1;33',
+    'magenta': u'0;35', 'bright magenta': u'1;35',
+    'normal': u'0',
+}
+COLOR_DIFF_ADD = 'green'
+COLOR_DIFF_REMOVE = 'red'
+COLOR_DIFF_LINES = 'cyan'
+
+
+# NB this is a simplified version of https://github.com/ansible/ansible/blob/v2.11.0/lib/ansible/utils/color.py#L73-L93
+# see https://github.com/ansible/ansible/issues/74793
+def stringc(text, color):
+    color_code = COLOR_CODES[color]
+    fmt = u"\033[%sm%s\033[0m"
+    return u"\n".join([fmt % (color_code, t) for t in text.split(u'\n')])
+
+
+# NB this came from https://github.com/ansible/ansible/blob/v2.11.0/lib/ansible/plugins/callback/__init__.py#L220-L227
+# see https://github.com/ansible/ansible/issues/74793
+def get_highlighted_diff(diff):
+    lines = []
+    for line in diff.splitlines(True):
+        if line.startswith('+'):
+            line = stringc(line, COLOR_DIFF_ADD)
+        elif line.startswith('-'):
+            line = stringc(line, COLOR_DIFF_REMOVE)
+        elif line.startswith('@@'):
+            line = stringc(line, COLOR_DIFF_LINES)
+        lines.append(line)
+    return ''.join(lines)
 
 
 def main():

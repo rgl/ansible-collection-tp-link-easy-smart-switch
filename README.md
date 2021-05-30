@@ -176,8 +176,8 @@ ansible-inventory --list --yaml
 ansible-lint example-playbook.yml
 ansible-playbook example-playbook.yml --syntax-check
 ansible-playbook example-playbook.yml --list-hosts
-ansible-playbook example-playbook.yml --check -vvv
-ansible-playbook example-playbook.yml -vvv
+ansible-playbook example-playbook.yml --diff --check #-vvv
+ansible-playbook example-playbook.yml --diff #-vvv
 ```
 
 Publish the collection:
