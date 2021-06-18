@@ -34,7 +34,10 @@ class Network:
              if i != 'lo':
                  addr = netifaces.ifaddresses(i)
                  if netifaces.AF_INET in addr:
-                     interface = [i for x in addr[netifaces.AF_INET] if x['addr'] == ip_address][0]
+                     for x in addr[netifaces.AF_INET]:
+                         if x['addr'] == ip_address:
+                             interface = i
+                             break
 
         # Sending socket
         self.ss = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
