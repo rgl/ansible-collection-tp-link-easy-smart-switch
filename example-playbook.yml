@@ -9,8 +9,7 @@
       rgl.tp_link_easy_smart_switch.smrt_config:
         username: "{{ smrt_username }}"
         password: "{{ smrt_password }}"
-        host_ip_address: "{{ smrt_host_ip_address }}"
-        host_mac_address: "{{ smrt_host_mac_address }}"
+        host_interface: "{{ smrt_host_interface }}"
         switch_mac_address: "{{ smrt_switch_mac_address }}"
         # NB undefined ports will be disabled and put in vlan 1 as untagged
         #    ports.
