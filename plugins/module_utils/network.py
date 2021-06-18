@@ -1,4 +1,4 @@
-import socket, random, logging
+import socket, random, logging, netifaces
 
 from .protocol import Protocol
 from .binary import byte2ports,mac_to_str,mac_to_bytes
@@ -28,6 +28,14 @@ class Network:
           'switch_mac': mac_to_bytes(self.switch_mac),
         })
 
+        # find interface matching the specified ip_address
+        interface = None
+        for i in netifaces.interfaces():
+             if i != 'lo':
+                 addr = netifaces.ifaddresses(i)
+                 if netifaces.AF_INET in addr:
+                     interface = [i for x in addr[netifaces.AF_INET] if x['addr'] == ip_address][0]
+
         # Sending socket
         self.ss = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.ss.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -36,6 +44,8 @@ class Network:
         # Receiving socket
         self.rs = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.rs.bind((Network.BROADCAST_ADDR, Network.UDP_RECEIVE_FROM_PORT))
+        if interface:
+            self.rs.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE, interface.encode())
         self.rs.settimeout(10)
 
     def send(self, op_code, payload):
