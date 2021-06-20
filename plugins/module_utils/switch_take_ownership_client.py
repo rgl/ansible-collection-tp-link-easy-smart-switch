@@ -25,7 +25,7 @@ class SmrtSwitchTakeOwnershipClient(SmrtSwitchTakeOwnershipClientInterface):
         self._password = password
         self._switch_ip_address = switch_ip_address
         (self._host_ip_address, self._host_ip_mask, self._host_mac_address) = self.__get_host_address()
-        interface = self.__get_default_interface()
+        interface = self.__get_default_host_interface()
         self._network = Network(interface, switch_mac_address)
 
     def __get_host_address(self):
@@ -47,7 +47,7 @@ class SmrtSwitchTakeOwnershipClient(SmrtSwitchTakeOwnershipClientInterface):
                     return (host_ip_address, host_ip_mask, host_mac_address)
         raise Exception(f'could not find a host ip address in the same network as the switch {self._switch_ip_address}')
 
-    def __get_default_interface(self):
+    def __get_default_host_interface(self):
         default_network = ip_network('192.168.0.0/24')
         for interface in netifaces.interfaces():
             if interface == 'lo':
