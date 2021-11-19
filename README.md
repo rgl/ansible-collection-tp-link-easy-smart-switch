@@ -63,7 +63,7 @@ another in the switch default `192.168.0.0/24` network.
 **NB** The switch will use the 192.168.0.1 IP address when there is no DHCP
 server in the network.
 
-This procedure assumes the host has the following netplan configuration:
+This procedure assumes the host has the following netplan configuration at `/etc/netplan/config.yaml`:
 
 ```yaml
 network:
@@ -105,6 +105,25 @@ network:
       link: enp3s0
       link-local: []
 ```
+
+And forwarding within the `br-rpi` interface is allowed, e.g.:
+
+```bash
+sudo -i
+apt-get install iptables-persistent
+cat >/etc/iptables/rules.v4 <<'EOF'
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+-A FORWARD -i br-rpi -o br-rpi -j ACCEPT
+COMMIT
+EOF
+sed -i -E 's,^\s*#?\s*(net.ipv4.ip_forward=).+,\11,g' /etc/sysctl.conf
+reboot
+```
+
+**NB** This is needed when you use docker, because it sets the default filter FORWARD policy to DROP.
 
 Ensure that the correct ip (and mac) addresses are defined in your inventory and playbook.
 
