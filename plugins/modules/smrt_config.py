@@ -25,15 +25,10 @@ options:
         description:
             - The switch password.
         type: str
-    host_ip_address:
+    host_interface:
         required: True
         description:
-            - The host ip address.
-        type: str
-    host_mac_address:
-        required: True
-        description:
-            - The host mac address.
+            - The host interface.
         type: str
     switch_mac_address:
         required: True
@@ -109,8 +104,7 @@ EXAMPLES = '''
   rgl.tp_link_easy_smart_switch.smrt_config:
     username: admin
     password: admin
-    host_ip_address: 10.1.0.1
-    host_mac_address: 08:60:6e:11:11:11
+    host_interface: enp2s0f0
     switch_mac_address: 50:d4:f7:22:22:22
     # NB undefined ports will be disabled and put in vlan 1 as untagged
     #    ports.
@@ -170,8 +164,7 @@ class SmrtConfig(AnsibleModule):
             argument_spec=dict(
                 username=dict(type='str', required=True),
                 password=dict(type='str', required=True, no_log=True),
-                host_ip_address=dict(type='str', required=True),
-                host_mac_address=dict(type='str', required=True),
+                host_interface=dict(type='str', required=True),
                 switch_mac_address=dict(type='str', required=True),
                 ports=dict(type='list', elements='dict', required=True, options=dict(
                     port=dict(type='int', required=True),
@@ -190,8 +183,7 @@ class SmrtConfig(AnsibleModule):
     def main(self):
         switch = SmrtSwitch(
             SmrtSwitchClient(
-                self.params['host_ip_address'],
-                self.params['host_mac_address'],
+                self.params['host_interface'],
                 self.params['switch_mac_address'],
                 self.params['username'],
                 self.params['password']))

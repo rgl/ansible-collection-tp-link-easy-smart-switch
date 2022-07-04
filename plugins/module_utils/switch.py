@@ -453,8 +453,7 @@ if __name__ == '__main__':
 
     with open(f'{os.path.dirname(os.path.abspath(__file__))}/../../example-inventory.yml', 'r') as f:
         example_inventory = yaml.safe_load(f)
-    smrt_host_ip_address = example_inventory['all']['vars']['smrt_host_ip_address']
-    smrt_host_mac_address = example_inventory['all']['vars']['smrt_host_mac_address']
+    smrt_host_interface = example_inventory['all']['vars']['smrt_host_interface']
     smrt_switch_ip_address = list(example_inventory['all']['children']['smrt_switches']['hosts'].keys())[0]
     smrt_switch_mac_address = example_inventory['all']['children']['smrt_switches']['hosts'][smrt_switch_ip_address]['smrt_switch_mac_address']
     smrt_username = example_inventory['all']['vars']['smrt_username']
@@ -470,8 +469,7 @@ if __name__ == '__main__':
 
     switch = SmrtSwitch(
         SmrtSwitchClient(
-            smrt_host_ip_address,
-            smrt_host_mac_address,
+            smrt_host_interface,
             smrt_switch_mac_address,
             smrt_username,
             smrt_password))

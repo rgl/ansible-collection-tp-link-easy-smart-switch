@@ -1,4 +1,4 @@
-import socket, random, logging
+import socket, random, logging, netifaces
 
 from .protocol import Protocol
 from .binary import byte2ports,mac_to_str,mac_to_bytes
@@ -14,10 +14,10 @@ class Network:
     UDP_SEND_TO_PORT = 29808
     UDP_RECEIVE_FROM_PORT = 29809
 
-    def __init__(self, ip_address, host_mac, switch_mac="00:00:00:00:00:00"):
+    def __init__(self, interface, switch_mac="00:00:00:00:00:00"):
         self.switch_mac = switch_mac
-        self.host_mac = host_mac
-        self.ip_address = ip_address
+
+        self.host_mac = netifaces.ifaddresses(interface)[netifaces.AF_LINK][0]['addr']
 
         self.sequence_id = random.randint(0, 1000)
 
@@ -28,15 +28,11 @@ class Network:
           'switch_mac': mac_to_bytes(self.switch_mac),
         })
 
-        # Sending socket
-        self.ss = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.ss.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        self.ss.bind((ip_address, Network.UDP_RECEIVE_FROM_PORT))
-
-        # Receiving socket
-        self.rs = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.rs.bind((Network.BROADCAST_ADDR, Network.UDP_RECEIVE_FROM_PORT))
-        self.rs.settimeout(10)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE, interface.encode())
+        self.socket.bind((Network.BROADCAST_ADDR, Network.UDP_RECEIVE_FROM_PORT))
+        self.socket.settimeout(10)
 
     def send(self, op_code, payload):
         self.sequence_id = (self.sequence_id + 1) % 1000
@@ -49,11 +45,11 @@ class Network:
         packet = Protocol.encode(packet)
         logger.debug('Sending Header:  ' + str(self.header))
         logger.debug('Sending Payload: ' + str(payload))
-        self.ss.sendto(packet, (Network.BROADCAST_ADDR, Network.UDP_SEND_TO_PORT))
+        self.socket.sendto(packet, (Network.BROADCAST_ADDR, Network.UDP_SEND_TO_PORT))
 
     def receive(self):
         try:
-            data, addr = self.rs.recvfrom(1500)
+            data, addr = self.socket.recvfrom(1500)
             data = Protocol.decode(data)
             logger.debug('Receive Packet: ' + data.hex())
             header, payload = Protocol.split(data)

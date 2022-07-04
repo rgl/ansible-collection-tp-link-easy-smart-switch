@@ -36,10 +36,10 @@ class SmrtSwitchClientInterface(object):
 
 class SmrtSwitchClient(SmrtSwitchClientInterface):
 
-    def __init__(self, host_ip_address, host_mac_address, switch_mac_address, username, password):
+    def __init__(self, host_interface, switch_mac_address, username, password):
         self._username = username
         self._password = password
-        self._network = Network(host_ip_address, host_mac_address, switch_mac_address)
+        self._network = Network(host_interface, switch_mac_address)
         self._network.login(username, password)
 
     def get_ports(self):
